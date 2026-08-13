@@ -37,6 +37,18 @@ python3 shot_planner.py            # opens http://127.0.0.1:8765/ in your browse
 
 On macOS you can just double-click **Start Planner.command**. On Windows, **start.bat**.
 
+### Not a programmer? No terminal needed
+
+1. **[Download the ZIP](https://github.com/miniboxseries/gimmick-shot-planner/archive/refs/heads/main.zip)** and unzip it anywhere.
+2. **macOS** — right-click **Start Planner.command** → *Open* → *Open*. (Right-click the first time only,
+   because the file came from the internet; after that a double-click works.)
+   **Windows** — double-click **start.bat**. You need Python from [python.org](https://www.python.org/downloads/)
+   installed once, with "Add Python to PATH" ticked.
+3. Your browser opens at `http://127.0.0.1:8765/`. That's it.
+
+If macOS offers to install the command line developer tools, say yes — that is Python, and it is a
+one-time thing. To stop the planner, close the Terminal window it opened.
+
 The repo ships with a small demo project (a coffee-flask spot) so you can see it working. Delete
 `shots/*` and rewrite `project.json` when you start your own film.
 
