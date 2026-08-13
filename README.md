@@ -4,7 +4,9 @@ A tiny, dependency-free shot planner for AI film and TVC production. One Python 
 one `project.json`. It turns a shot list into consistent prompts, keeps every rendered frame next to
 the shot it belongs to, and prints a client-ready storyboard.
 
-**[อ่านภาษาไทยที่นี่ / Thai version →](README.th.md)**
+**[▶ Try the live demo](https://miniboxseries.github.io/gimmick-shot-planner/)** · **[อ่านภาษาไทยที่นี่ / Thai version →](README.th.md)**
+
+The demo is the tool itself, read-only, with a sample project loaded — no download, no sign-up.
 
 ![board](docs/board.png)
 
