@@ -1,0 +1,5 @@
+# generated cache for read-only mode
+planner_data.js
+project.json.tmp
+.DS_Store
+__pycache__/

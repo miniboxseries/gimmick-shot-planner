@@ -1,0 +1,359 @@
+{
+  "name": "Sunrise Coffee — demo spot",
+  "lang": "th",
+  "port": 8765,
+  "shots_dir": "shots",
+  "sheets_dir": "sheets",
+  "script_file": "script.txt",
+  "channels": [
+    {
+      "id": "flow",
+      "label": "Flow / Veo",
+      "prefix": "flow_",
+      "target": 10,
+      "style": "full"
+    },
+    {
+      "id": "comfy",
+      "label": "ComfyUI",
+      "prefix": "comfy_",
+      "target": 10,
+      "style": "tags"
+    }
+  ],
+  "product": {
+    "label": "สถานะสินค้า",
+    "block": "THE PRODUCT — LOCKED DESIGN. THIS RULE OUTRANKS EVERYTHING: a matte-black stainless-steel vacuum flask, 22 cm tall and 7 cm across, a perfectly straight cylinder with NO taper and NO waist. A single brushed-copper band circles the body one third down from the top. The lid is the same matte black, seated perfectly flush so the silhouette stays one unbroken cylinder. Around the base of the lid runs a thin recessed ring. The surface is MATTE — soft diffuse highlights only, never chrome, never glossy, never mirror. It is NEVER a tapered tumbler, NEVER a mug, NEVER transparent; if the body tapers the image is WRONG.",
+    "short": "matte-black stainless vacuum flask with a brushed-copper band"
+  },
+  "prompt": {
+    "head": "A single photorealistic cinematic still frame, landscape 16:9, from a television commercial.",
+    "tail": "Muted filmic colour, gentle contrast, soft natural light, fine film grain. Photorealistic cinematic still frame, shallow depth of field, full-frame camera. NOT CGI, NOT 3D render, NOT illustration. NO readable text, NO logos, NO subtitles, NO watermark anywhere in frame.",
+    "tail_short": "photorealistic cinematic still, muted filmic tone, no text"
+  },
+  "options": {
+    "sizes": [
+      {
+        "id": "ews",
+        "label": "Extreme Wide",
+        "en": "extreme wide shot"
+      },
+      {
+        "id": "ws",
+        "label": "Wide",
+        "en": "wide shot"
+      },
+      {
+        "id": "mls",
+        "label": "Medium Long",
+        "en": "medium long shot"
+      },
+      {
+        "id": "ms",
+        "label": "Medium",
+        "en": "medium shot"
+      },
+      {
+        "id": "mcu",
+        "label": "Medium CU",
+        "en": "medium close-up"
+      },
+      {
+        "id": "cu",
+        "label": "Close-up",
+        "en": "close-up"
+      },
+      {
+        "id": "ecu",
+        "label": "Extreme CU",
+        "en": "extreme close-up"
+      },
+      {
+        "id": "macro",
+        "label": "Macro",
+        "en": "macro shot"
+      }
+    ],
+    "angles": [
+      {
+        "id": "top90",
+        "label": "Top 90°",
+        "en": "top-down overhead angle"
+      },
+      {
+        "id": "top45",
+        "label": "Top 45°",
+        "en": "high 45-degree angle looking down"
+      },
+      {
+        "id": "high",
+        "label": "มุมสูง",
+        "en": "high angle"
+      },
+      {
+        "id": "eye",
+        "label": "ระดับสายตา",
+        "en": "eye-level angle"
+      },
+      {
+        "id": "low",
+        "label": "มุมเสย",
+        "en": "slight low angle"
+      },
+      {
+        "id": "table",
+        "label": "ระดับโต๊ะ",
+        "en": "camera sitting at table level"
+      },
+      {
+        "id": "side",
+        "label": "ด้านข้าง",
+        "en": "side-on profile angle"
+      },
+      {
+        "id": "ots",
+        "label": "ข้ามไหล่ (OTS)",
+        "en": "over-the-shoulder angle"
+      },
+      {
+        "id": "behind",
+        "label": "ตามหลัง",
+        "en": "following from behind the subject"
+      },
+      {
+        "id": "pov",
+        "label": "POV",
+        "en": "first-person POV"
+      }
+    ],
+    "moves": [
+      {
+        "id": "static",
+        "label": "ตั้งนิ่ง",
+        "en": "locked-off static camera"
+      },
+      {
+        "id": "zoomslow",
+        "label": "Zoom in ช้าๆ",
+        "en": "slow zoom in"
+      },
+      {
+        "id": "pushin",
+        "label": "Push-in",
+        "en": "dynamic push-in"
+      },
+      {
+        "id": "follow",
+        "label": "Dolly ตาม",
+        "en": "dolly following the subject"
+      },
+      {
+        "id": "halfarc",
+        "label": "Dolly ครึ่งวง",
+        "en": "semi-circular dolly arc around the subject"
+      },
+      {
+        "id": "orbit",
+        "label": "Orbit 360°",
+        "en": "360-degree orbit around the subject"
+      },
+      {
+        "id": "tiltup",
+        "label": "Tilt up",
+        "en": "tilt up"
+      },
+      {
+        "id": "handheld",
+        "label": "Handheld",
+        "en": "handheld"
+      },
+      {
+        "id": "ramp",
+        "label": "Speed ramp",
+        "en": "super slow-motion with a fast-slow speed ramp"
+      }
+    ],
+    "locs": [
+      {
+        "id": "bedroom",
+        "label": "ห้องนอนก่อนฟ้าสาง",
+        "en": "a dim bedroom before sunrise — blue pre-dawn light through half-open blinds",
+        "short": "a dim bedroom before sunrise"
+      },
+      {
+        "id": "kitchen",
+        "label": "ครัวบ้าน เช้า",
+        "en": "a small home kitchen at sunrise — warm low sun raking across a wooden counter",
+        "short": "a home kitchen at sunrise"
+      },
+      {
+        "id": "void",
+        "label": "สตูดิโอดำ",
+        "en": "a pure black studio void with a single overhead spotlight",
+        "short": "a black studio void"
+      },
+      {
+        "id": "street",
+        "label": "ถนนเมือง เช้า",
+        "en": "a city pavement early in the morning — long shadows, commuters out of focus",
+        "short": "a city pavement at dawn"
+      },
+      {
+        "id": "desk",
+        "label": "โต๊ะทำงาน",
+        "en": "a quiet office desk by a window, soft daylight",
+        "short": "an office desk by a window"
+      }
+    ],
+    "states": [
+      {
+        "id": "na",
+        "label": "ไม่มีสินค้าในช็อต",
+        "en": ""
+      },
+      {
+        "id": "closed",
+        "label": "ปิดฝา",
+        "en": "The flask is closed, the lid seated flush, no steam.",
+        "short": "lid closed"
+      },
+      {
+        "id": "open",
+        "label": "เปิดฝา มีไอ",
+        "en": "The flask is open and one thin ribbon of steam rises from the mouth.",
+        "short": "open, thin steam rising"
+      },
+      {
+        "id": "lit",
+        "label": "ไฟวงแหวนติด",
+        "en": "The thin ring at the base of the lid GLOWS SOFT AMBER.",
+        "short": "amber ring glowing at the lid"
+      }
+    ]
+  },
+  "cast_presets": [
+    "มือ (เห็นเฉพาะมือ)",
+    "ผู้ชายวัย 30",
+    "ผู้หญิงวัย 30",
+    "คนเดินเท้าเบลอๆ",
+    "ไม่มีคน"
+  ],
+  "takes": [
+    "Take 1 — 35 mm lens, the described angle exactly, balanced natural exposure.",
+    "Take 2 — 50 mm lens, a touch closer, slightly warmer white balance.",
+    "Take 3 — 85 mm lens, tighter crop on the subject, creamier bokeh.",
+    "Take 4 — slightly lower camera height, more foreground presence.",
+    "Take 5 — slightly higher camera height, cleaner background separation.",
+    "Take 6 — subject pushed to the left third, negative space on the right.",
+    "Take 7 — subject pushed to the right third, negative space on the left.",
+    "Take 8 — key light moved to hard backlight, rim on the subject, deeper shadows.",
+    "Take 9 — flatter soft light, lifted shadows, gentler contrast.",
+    "Take 10 — one stop darker overall, moodier, richer blacks."
+  ],
+  "shots": [
+    {
+      "folder": "Shot_01_Alarm",
+      "sec": 2,
+      "size": "cu",
+      "angle": "side",
+      "move": "static",
+      "loc": "bedroom",
+      "state": "na",
+      "cast": "มือ (เห็นเฉพาะมือ)",
+      "desc": "มือปัดปิดนาฬิกาปลุกบนโต๊ะข้างเตียง ฟ้ายังไม่สาง",
+      "action": "",
+      "picks": []
+    },
+    {
+      "folder": "Shot_02_Kitchen_Wide",
+      "sec": 3,
+      "size": "ws",
+      "angle": "eye",
+      "move": "pushin",
+      "loc": "kitchen",
+      "state": "closed",
+      "cast": "ผู้หญิงวัย 30",
+      "desc": "เดินเข้าครัวตอนแดดแรกส่อง กระติกวางรออยู่บนเคาน์เตอร์",
+      "action": "",
+      "picks": []
+    },
+    {
+      "folder": "Shot_03_Reveal",
+      "sec": 3,
+      "size": "cu",
+      "angle": "eye",
+      "move": "orbit",
+      "loc": "void",
+      "state": "closed",
+      "cast": "ไม่มีคน",
+      "desc": "เปิดตัวสินค้า กระติกลอยกลางห้องดำใต้สปอตไลท์ กล้องหมุนรอบ",
+      "action": "",
+      "picks": []
+    },
+    {
+      "folder": "Shot_04_Pour",
+      "sec": 3,
+      "size": "macro",
+      "angle": "table",
+      "move": "static",
+      "loc": "kitchen",
+      "state": "open",
+      "cast": "มือ (เห็นเฉพาะมือ)",
+      "desc": "Macro รินกาแฟลงกระติก ไอลอยขึ้นช้าๆ",
+      "action": "",
+      "picks": []
+    },
+    {
+      "folder": "Shot_05_Lid",
+      "sec": 2,
+      "size": "ecu",
+      "angle": "side",
+      "move": "static",
+      "loc": "kitchen",
+      "state": "lit",
+      "cast": "มือ (เห็นเฉพาะมือ)",
+      "desc": "ปิดฝา วงแหวนไฟสีอำพันติดขึ้นมาแวบหนึ่ง",
+      "action": "",
+      "picks": []
+    },
+    {
+      "folder": "Shot_06_Street",
+      "sec": 3,
+      "size": "mls",
+      "angle": "behind",
+      "move": "follow",
+      "loc": "street",
+      "state": "closed",
+      "cast": "ผู้หญิงวัย 30, คนเดินเท้าเบลอๆ",
+      "desc": "กล้องตามหลังเดินออกไปทำงาน ถือกระติกไว้ในมือ",
+      "action": "",
+      "picks": []
+    },
+    {
+      "folder": "Shot_07_Desk",
+      "sec": 3,
+      "size": "mcu",
+      "angle": "eye",
+      "move": "zoomslow",
+      "loc": "desk",
+      "state": "open",
+      "cast": "ผู้หญิงวัย 30",
+      "desc": "ถึงโต๊ะทำงาน เปิดฝา ไอยังลอยอยู่ — ยังร้อนเท่าเดิม",
+      "action": "",
+      "picks": []
+    },
+    {
+      "folder": "Shot_08_Endframe",
+      "sec": 3,
+      "size": "ms",
+      "angle": "eye",
+      "move": "static",
+      "loc": "void",
+      "state": "lit",
+      "cast": "ไม่มีคน",
+      "desc": "End frame กระติกกลางห้องดำ วงแหวนไฟติด รอใส่โลโก้",
+      "action": "",
+      "picks": []
+    }
+  ]
+}

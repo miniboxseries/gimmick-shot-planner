@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gimmick Shot Planner</title>
+<style>
+  :root{--bg:#0f1115;--card:#1a1d24;--card2:#22262f;--line:#2e3340;--tx:#e7e9ee;--dim:#9aa1af;
+        --cyan:#22d3ee;--orange:#fb923c;--green:#4ade80;--red:#f87171;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Thonburi","Noto Sans Thai",sans-serif;font-size:15px}
+  header{position:sticky;top:0;z-index:50;background:#0f1115ee;backdrop-filter:blur(6px);
+         border-bottom:1px solid var(--line);padding:10px 18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  header h1{font-size:18px;letter-spacing:.5px;white-space:nowrap}
+  header h1 span{color:var(--cyan)}
+  .pill{font-size:12px;padding:4px 12px;border-radius:20px;background:var(--card2);color:var(--dim)}
+  .pill.live{color:var(--green)}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap}
+  .tab{padding:8px 16px;border-radius:9px;border:1px solid var(--line);cursor:pointer;color:var(--dim);user-select:none;font-size:15px}
+  .tab.on{background:var(--cyan);color:#00222b;border-color:var(--cyan);font-weight:700}
+  .sp{flex:1}
+  input[type=text],input[type=number],select,textarea{background:var(--card2);border:1px solid var(--line);
+      color:var(--tx);border-radius:9px;padding:8px 11px;font:inherit}
+  textarea{width:100%;resize:vertical;line-height:1.55}
+  button{background:var(--card2);border:1px solid var(--line);color:var(--tx);border-radius:9px;
+         padding:8px 14px;font:inherit;cursor:pointer}
+  button:hover{border-color:var(--cyan)}
+  button:disabled{opacity:.5;cursor:default}
+  button.pri{background:var(--cyan);color:#00222b;border-color:var(--cyan);font-weight:700}
+  button.big{font-size:16px;padding:12px 22px}
+  main{padding:18px;max-width:1500px;margin:0 auto}
+  a{color:var(--cyan)}
+  .hint{background:var(--card);border:1px solid var(--orange);color:var(--orange);border-radius:10px;
+        padding:10px 16px;margin-bottom:14px;font-size:13.5px;line-height:1.7}
+  /* ---- board ---- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;transition:transform .08s}
+  .card:hover{transform:translateY(-2px);border-color:var(--cyan)}
+  .card .clickzone{cursor:pointer}
+  .thumb{width:100%;aspect-ratio:16/9;object-fit:cover;background:#000;display:block}
+  .nothumb{width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;color:#555;background:#000;font-size:13px}
+  .card .body{padding:10px 12px}
+  .code{font-weight:700;font-size:14px}
+  .meta{color:var(--dim);font-size:12.5px;margin-top:3px;line-height:1.5;min-height:2.9em}
+  .prog{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+  .badge{font-size:11.5px;padding:3px 9px;border-radius:20px;background:var(--card2);color:var(--dim)}
+  .badge.done{background:#123524;color:var(--green)}
+  .cardbtn{display:block;width:100%;border-radius:0;border:none;border-top:1px solid var(--line);
+           background:var(--card2);padding:11px;font-size:14px;font-weight:700;color:var(--cyan)}
+  .cardbtn:hover{background:var(--cyan);color:#00222b}
+  /* ---- modal ---- */
+  #ov{position:fixed;inset:0;background:#000b;z-index:100;display:none;overflow:auto;padding:28px 14px}
+  #ov.show{display:block}
+  .modal{max-width:1000px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px}
+  .modal h2{font-size:19px}
+  .modal .sub{color:var(--dim);font-size:13.5px;margin:4px 0 16px}
+  .imgs{display:flex;gap:9px;overflow-x:auto;padding-bottom:6px}
+  .imgs a img{height:120px;border-radius:9px;border:1px solid var(--line);display:block}
+  .imgs a img:hover{border-color:var(--cyan)}
+  .imglabel{font-size:12.5px;color:var(--dim);margin:14px 0 6px;font-weight:700}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:16px 0 8px;flex-wrap:wrap}
+  .seg div{padding:9px 20px;cursor:pointer;color:var(--dim);font-size:14.5px;user-select:none}
+  .seg div.on{background:var(--cyan);color:#00222b;font-weight:700}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+  .savestate{font-size:12.5px;color:var(--dim)}
+  details{margin-top:22px;border-top:1px solid var(--line);padding-top:14px}
+  summary{cursor:pointer;color:var(--dim);font-size:14px;user-select:none}
+  summary:hover{color:var(--tx)}
+  .adv{margin-top:14px}
+  .row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .field{display:flex;flex-direction:column;gap:5px}
+  .field label{font-size:12.5px;color:var(--dim)}
+  .opts{display:flex;gap:6px;flex-wrap:wrap}
+  .opt{font-size:13px;padding:6px 13px;border-radius:20px;border:1px solid var(--line);cursor:pointer;color:var(--dim);user-select:none}
+  .opt.on{background:var(--cyan);border-color:var(--cyan);color:#00222b;font-weight:700}
+  /* ---- new shot form ---- */
+  .fs{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:14px;max-width:940px}
+  .fs h3{font-size:15.5px;margin-bottom:13px;display:flex;align-items:center;gap:10px}
+  .num{display:inline-flex;min-width:26px;height:26px;border-radius:50%;background:var(--cyan);color:#00222b;
+       align-items:center;justify-content:center;font-size:14px;font-weight:700}
+  .drop{border:2px dashed var(--line);border-radius:12px;padding:28px 16px;text-align:center;color:var(--dim);
+        cursor:pointer;font-size:14px;transition:all .12s}
+  .drop.over,.drop:hover{border-color:var(--cyan);color:var(--cyan);background:#22d3ee11}
+  .filelist{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .fitem{position:relative}
+  .fitem img{height:82px;border-radius:8px;border:1px solid var(--line);display:block}
+  .fitem .x{position:absolute;top:-7px;right:-7px;background:var(--red);color:#fff;border-radius:50%;
+            width:21px;height:21px;font-size:12px;line-height:21px;text-align:center;cursor:pointer;font-weight:700}
+  .sheetgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:9px;margin-top:10px;
+             max-height:340px;overflow-y:auto;padding-right:4px}
+  .sh{border:2px solid transparent;border-radius:10px;cursor:pointer;position:relative;background:var(--card2);padding-bottom:3px}
+  .sh img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:8px 8px 0 0;display:block}
+  .sh.on{border-color:var(--cyan)}
+  .sh.on::after{content:"✓";position:absolute;top:5px;right:5px;background:var(--cyan);color:#00222b;
+                border-radius:50%;width:21px;height:21px;text-align:center;line-height:21px;font-weight:700;font-size:13px}
+  .sh .cap{font-size:10.5px;color:var(--dim);padding:4px 6px 2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .minidrop{border:1.5px dashed var(--line);border-radius:9px;height:120px;min-width:110px;display:flex;flex-direction:column;
+            align-items:center;justify-content:center;color:var(--dim);cursor:pointer;font-size:12px;gap:4px;padding:0 10px}
+  .minidrop:hover,.minidrop.over{border-color:var(--cyan);color:var(--cyan)}
+  /* ---- storyboard ---- */
+  .sb{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .sbcard{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;break-inside:avoid}
+  .sbcard .body{padding:9px 11px}
+  .sbcard .th{font-size:12.5px;line-height:1.5;margin-top:4px}
+  .sbcard .cam{font-size:11.5px;color:var(--dim);margin-top:4px}
+  pre.script{white-space:pre-wrap;background:var(--card);border:1px solid var(--line);border-radius:12px;
+             padding:22px;line-height:1.75;font-family:inherit;font-size:14px}
+  .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:var(--cyan);color:#00222b;
+         padding:11px 24px;border-radius:26px;font-weight:700;z-index:400;display:none;max-width:90vw;text-align:center}
+  /* ---- lightbox ---- */
+  #lb{position:fixed;inset:0;background:#000e;z-index:300;display:none;flex-direction:column}
+  #lb.show{display:flex}
+  #lb .stage{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;position:relative}
+  #lb .stage img{max-width:96vw;max-height:calc(100vh - 110px);object-fit:contain;border-radius:6px}
+  #lb .navbtn{position:absolute;top:50%;transform:translateY(-50%);font-size:30px;background:#0009;border:none;
+              color:#fff;border-radius:50%;width:56px;height:56px;cursor:pointer}
+  #lb .navbtn:hover{background:var(--cyan);color:#00222b}
+  #lb .bar{display:flex;gap:12px;align-items:center;justify-content:center;padding:14px;flex-wrap:wrap}
+  #lb .cap{color:var(--dim);font-size:13.5px}
+  #lb .star{font-size:16px;padding:11px 26px}
+  #lb .star.on{background:var(--orange);border-color:var(--orange);color:#221200;font-weight:700}
+  .imgs .rimg{position:relative;cursor:zoom-in}
+  .imgs .rimg img{height:120px;border-radius:9px;border:2px solid var(--line);display:block}
+  .imgs .rimg:hover img{border-color:var(--cyan)}
+  .imgs .rimg.picked img{border-color:var(--orange)}
+  .imgs .rimg.picked::after{content:"★";position:absolute;top:3px;right:6px;font-size:15px;color:var(--orange)}
+  .imgs .rimg .ch{position:absolute;left:5px;bottom:5px;background:#000a;color:#cdd3dd;font-size:10px;
+                  padding:1px 7px;border-radius:10px}
+  @media print{
+    header,.no-print,.cardbtn{display:none!important}
+    body{background:#fff;color:#000}
+    .sbcard{background:#fff;border-color:#ccc;page-break-inside:avoid}
+    .sbcard .cam{color:#555}
+    main{padding:0;max-width:none}
+    .sb{gap:8px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="brand">Gimmick <span>Shot Planner</span></h1>
+  <span class="pill" id="mode">…</span>
+  <nav class="tabs" id="tabs"></nav>
+  <div class="sp"></div>
+  <input type="text" id="q" placeholder="…" style="width:150px">
+  <button onclick="refresh(true)" id="btn-refresh">🔄</button>
+  <button class="pri" onclick="window.print()" id="btn-print">🖨</button>
+</header>
+
+<main>
+  <div id="filehint" class="hint" style="display:none"></div>
+  <div id="v-board"><div class="grid" id="board"></div></div>
+  <div id="v-story" style="display:none">
+    <p class="hint no-print" id="storyhint" style="border-color:var(--line);color:var(--dim)"></p>
+    <div class="sb" id="story"></div>
+  </div>
+  <div id="v-new" style="display:none"></div>
+  <div id="v-script" style="display:none"><pre class="script" id="scriptbox"></pre></div>
+</main>
+
+<div id="ov" onclick="if(event.target===this)closeModal()"><div class="modal" id="modal"></div></div>
+<div id="lb">
+  <div class="stage" onclick="if(event.target===this)closeLb()">
+    <button class="navbtn" style="left:18px" onclick="lbStep(-1)">‹</button>
+    <img id="lb-img" src="" alt="">
+    <button class="navbtn" style="right:18px" onclick="lbStep(1)">›</button>
+  </div>
+  <div class="bar">
+    <span class="cap" id="lb-cap"></span>
+    <button class="star" id="lb-star" onclick="lbPick()"></button>
+    <button onclick="closeLb()" id="lb-close"></button>
+    <span class="cap" id="lb-help"></span>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="planner_data.js" onerror="window.PLANNER=null"></script>
+<script>
+/* ============================================================ i18n */
+const STR = {
+th:{board:"ช็อตทั้งหมด",story:"สตอรี่บอร์ด",newshot:"➕ ช็อตใหม่",script:"สคริปต์",
+  search:"ค้นหา…",refresh:"อัปเดตจำนวนภาพที่เรนเดอร์",print:"พิมพ์",
+  live:"● บันทึกอัตโนมัติ",ro:"ดูอย่างเดียว",
+  offline:'ตอนนี้เปิดแบบ "ดูอย่างเดียว" — สร้างช็อตใหม่ / แก้ prompt ยังไม่ได้<br>1) ดับเบิลคลิก <b>Start Planner.command</b> (หรือสั่ง <code>python3 shot_planner.py</code>) 1 ครั้ง<br>2) แล้วเปิดหน้านี้ที่ <a href="{url}">{url}</a> (หรือกด 🔄 เดี๋ยวเด้งให้เอง)',
+  nodata:"ยังไม่มีข้อมูล — สั่ง <code>python3 shot_planner.py</code> ก่อน",
+  noimg:"ยังไม่มีภาพ",copy:"📋 คัดลอก prompt",take:"Take",
+  storyhint:"กด 🖨 แล้วเลือก Save as PDF = ได้สตอรี่บอร์ดส่งลูกค้า",
+  noscript:"(ยังไม่มีไฟล์สคริปต์)",
+  refs:"ภาพ Ref",none:"ไม่มี",addref:"＋ เพิ่มรูป",dropshort:"คลิก / ลากมาวาง",
+  rendered:"ภาพที่เรนเดอร์แล้ว",picked:"เลือกแล้ว",clickfull:"— คลิกเพื่อดูเต็มจอแล้วกดเลือกภาพเด็ดได้",
+  copytake:"📋 คัดลอก",copyonly:"คัดลอกเฉพาะ prompt",resettake:"↺ Take 1",
+  editable:"แก้ข้อความได้เลย เดี๋ยวบันทึกให้เอง",roedit:"เปิดผ่านเซิร์ฟเวอร์ถึงจะแก้ได้",
+  advanced:"⚙ ขั้นสูง — เปลี่ยนมุมกล้อง/โลเคชั่น แล้วให้สร้าง prompt ใหม่",
+  sec:"วินาที",cast:"ตัวละคร / คน",desc:"คำอธิบายช็อต",size:"ขนาดภาพ",angle:"มุมกล้อง",
+  move:"การเคลื่อนกล้อง",loc:"โลเคชั่น",state:"สถานะสินค้า",
+  action:"ACTION ในภาพ (ไม่บังคับ — เว้นว่างจะใช้คำอธิบายช็อตแทน)",
+  regen:"⚙ สร้าง prompt ใหม่จากตัวเลือกด้านบน (ทับของเดิมทุกช่อง)",close:"✕ ปิด",
+  lbpick:"★ เลือกภาพนี้",lbunpick:"★ เลือกแล้ว — กดอีกทีเพื่อเอาออก",lbclose:"ปิด (Esc)",
+  lbhelp:"← → เลื่อนดู · Enter = เลือก",
+  n1:"ชื่อช็อต + ความยาว",n2:"กล้อง",n3:"ฉาก",n4:"ตัวละคร / คน",n5:"อธิบายช็อต",
+  n6:"ภาพแนบ (Ref)",n7:"ตรวจก่อนสร้าง",
+  nname:"ชื่อช็อต",ncastph:"หรือพิมพ์เพิ่มเองตรงนี้",
+  ndescph:"เล่าว่าเห็นอะไรในภาพ ใครทำอะไร แสงบรรยากาศแบบไหน\nข้อความนี้จะถูกใส่ใน prompt ให้อัตโนมัติ",
+  ndrop:"📁 ลากรูปมาวางตรงนี้ หรือคลิกเพื่อเลือกไฟล์จากเครื่อง",
+  nsheets:"หรือเลือกจากชีทที่มีอยู่แล้ว (ตัวละคร / สินค้า / โลเคชั่น) — กดเลือกได้หลายอัน",
+  ntarget:"จะสร้างโฟลเดอร์",npreview:"prompt ที่จะได้ (แก้เพิ่มทีหลังในหน้าช็อตได้)",
+  ncreate:"✚ สร้างช็อตเลย",ncreating:"⏳ กำลังสร้าง…",nnoname:"ตั้งชื่อช็อตก่อนนะ",
+  nnoref:"ยังไม่ได้แนบรูป",nrefs:"รูปแนบ {n} รูป",nunnamed:"— ยังไม่ได้ตั้งชื่อ —",
+  nbare:'ชื่อ "{f}" ยังไม่มีคำอธิบายต่อท้าย\nปกติจะตั้งแบบ {f}_Kitchen_Reveal จะได้หาเจอง่าย\n\nจะใช้ชื่อนี้เลยไหม?',
+  ndup:'มีช็อต "{f}" อยู่แล้ว\nถ้าไปต่อ prompt เดิมของช็อตนั้นจะถูกทับ (รูปที่เรนเดอร์ไว้ไม่หาย)\n\nจะทับเลยไหม?',
+  nofform:"ตัวบันทึกยังไม่ทำงาน — เปิดผ่านเซิร์ฟเวอร์ก่อนถึงจะเพิ่มช็อตใหม่ได้",
+  tcopied:"คัดลอกแล้ว ✓",tcopytake:"คัดลอกแล้ว (Take {n}/{m})",tupdated:"อัปเดตแล้ว",
+  tsaved:"บันทึกแล้ว ✓",tsavefail:"บันทึกไม่สำเร็จ — เช็คว่าเซิร์ฟเวอร์ยังเปิดอยู่",
+  tregen:"สร้าง prompt ใหม่แล้ว",tadded:"เพิ่มรูปแล้ว ✓",tupfail:"อัปโหลดไม่สำเร็จ",
+  tcreated:"✓ สร้าง {f} แล้ว · รูปแนบ {n} รูป",tcreatefail:"สร้างไม่สำเร็จ: ",
+  tnoserver:"ต่อเซิร์ฟเวอร์ไม่ได้ — เช็คว่าหน้าต่าง Planner ยังเปิดอยู่"},
+en:{board:"All shots",story:"Storyboard",newshot:"➕ New shot",script:"Script",
+  search:"Search…",refresh:"Rescan render folders",print:"Print",
+  live:"● auto-saving",ro:"read-only",
+  offline:'Read-only mode — you cannot create shots or edit prompts.<br>1) Run <b>Start Planner.command</b> (or <code>python3 shot_planner.py</code>) once<br>2) then open this page at <a href="{url}">{url}</a> (or hit 🔄 and it will jump for you)',
+  nodata:"No data yet — run <code>python3 shot_planner.py</code> first",
+  noimg:"no image yet",copy:"📋 Copy prompt",take:"Take",
+  storyhint:"Hit 🖨 and choose Save as PDF to get a client-ready storyboard",
+  noscript:"(no script file)",
+  refs:"Reference images",none:"none",addref:"＋ Add",dropshort:"click / drop",
+  rendered:"Rendered",picked:"picked",clickfull:"— click to open full screen and star the good ones",
+  copytake:"📋 Copy",copyonly:"Copy prompt only",resettake:"↺ Take 1",
+  editable:"Edit anything — it saves itself",roedit:"Open through the server to edit",
+  advanced:"⚙ Advanced — change camera / location, then rebuild the prompt",
+  sec:"Seconds",cast:"Cast / people",desc:"Shot description",size:"Shot size",angle:"Camera angle",
+  move:"Camera move",loc:"Location",state:"Product state",
+  action:"ACTION in frame (optional — falls back to the description above)",
+  regen:"⚙ Rebuild prompts from the options above (overwrites every channel)",close:"✕ Close",
+  lbpick:"★ Pick this frame",lbunpick:"★ Picked — click again to unpick",lbclose:"Close (Esc)",
+  lbhelp:"← → browse · Enter = pick",
+  n1:"Shot name + length",n2:"Camera",n3:"Scene",n4:"Cast / people",n5:"Describe the shot",
+  n6:"Reference images",n7:"Check before creating",
+  nname:"Shot name",ncastph:"or type your own here",
+  ndescph:"Describe what is in frame, who does what, what the light feels like.\nThis text goes straight into the prompt.",
+  ndrop:"📁 Drop images here, or click to pick files",
+  nsheets:"Or pick from existing sheets (character / product / location) — multiple allowed",
+  ntarget:"Will create folder",npreview:"Prompt you will get (editable later on the shot page)",
+  ncreate:"✚ Create shot",ncreating:"⏳ creating…",nnoname:"Give the shot a name first",
+  nnoref:"no reference attached",nrefs:"{n} reference image(s)",nunnamed:"— no name yet —",
+  nbare:'"{f}" has no descriptive suffix.\nSomething like {f}_Kitchen_Reveal is much easier to find later.\n\nUse this name anyway?',
+  ndup:'"{f}" already exists.\nIts prompts will be overwritten (rendered images are kept).\n\nOverwrite?',
+  nofform:"Server is not running — start it to add new shots",
+  tcopied:"copied ✓",tcopytake:"copied (Take {n}/{m})",tupdated:"updated",
+  tsaved:"saved ✓",tsavefail:"save failed — is the planner still running?",
+  tregen:"prompts rebuilt",tadded:"images added ✓",tupfail:"upload failed",
+  tcreated:"✓ created {f} · {n} reference image(s)",tcreatefail:"could not create: ",
+  tnoserver:"cannot reach the server — is the planner still running?"}
+};
+const EMPTY = {name:"Shot Planner",lang:"th",port:8765,root:"shots",sheets:[],takes:[],script:"",
+  options:{sizes:[],angles:[],moves:[],locs:[],states:[]},castPresets:[],
+  channels:[{id:"main",label:"Main",prefix:"main_",target:10}],product:{},shots:[]};
+
+let P = window.PLANNER || EMPTY, SERVER = false;
+let L = STR[P.lang] || STR.th;
+const PORT = () => P.port || 8765;
+const API = location.protocol === "file:" ? "http://127.0.0.1:" + PORT() : "";
+const t = (k,vars) => { let s = (L[k] !== undefined ? L[k] : (STR.en[k] || k));
+  if (vars) for (const v in vars) s = s.split("{"+v+"}").join(vars[v]);
+  return s; };
+const LSKEY = "gsp_takes", DRAFTKEY = "gsp_newshot_draft";
+let takes = JSON.parse(localStorage.getItem(LSKEY) || "{}");   // {folder:{channel:n}}
+const saveTakes = () => localStorage.setItem(LSKEY, JSON.stringify(takes));
+
+/* ============================================================ helpers */
+const esc = s => (s||"").toString().replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+const enc = p => encodeURI(p);
+const byFolder = f => P.shots.find(s=>s.folder===f);
+const chan = id => P.channels.find(c=>c.id===id) || P.channels[0];
+const opt = (g,id) => (P.options[g]||[]).find(o=>o.id===id) || {id:"",label:"—",en:""};
+const olabel = o => o.label || o.th || o.id || "—";
+const target = ch => ch.target || 10;
+function renderList(s){
+  const out = [];
+  P.channels.forEach(c => ((s.renders||{})[c.id]||[]).forEach(f => out.push({f, ch:c.label})));
+  return out;
+}
+function thumbOf(s){
+  if (s.picks && s.picks.length) return `${P.root}/${s.folder}/${s.picks[0]}`;
+  const all = renderList(s);
+  if (all.length) return `${P.root}/${s.folder}/${all[0].f}`;
+  if (s.refs && s.refs.length) return `${P.root}/${s.folder}/ref/${s.refs[0]}`;
+  return null;
+}
+const nextTake = (folder,ch) => ((takes[folder]||{})[ch]||0);
+const prompts = s => (s.prompts = s.prompts || {});
+
+/* ============================================================ server */
+async function refresh(manual){
+  try{
+    const r = await fetch(API + "/api/data", {cache:"no-store"});
+    P = await r.json(); SERVER = true;
+  }catch(e){ SERVER = false; }
+  L = STR[P.lang] || STR.th;
+  // เปิดจากไฟล์ตรงๆ แต่เซิร์ฟเวอร์ทำงานอยู่ -> ย้ายไปเปิดผ่านเซิร์ฟเวอร์ จะได้แก้/สร้างช็อตได้จริง
+  if (SERVER && location.protocol === "file:" && !sessionStorage.getItem("gsp_nojump")){
+    sessionStorage.setItem("gsp_nojump","1");
+    location.replace("http://127.0.0.1:" + PORT() + "/planner.html");
+    return;
+  }
+  document.getElementById("brand").innerHTML = esc(P.name) + ` <span>${SERVER||window.PLANNER?"Shot Planner":""}</span>`;
+  document.title = P.name + " — Shot Planner";
+  document.getElementById("mode").textContent = SERVER ? t("live") : t("ro");
+  document.getElementById("mode").className = "pill" + (SERVER ? " live" : "");
+  const fh = document.getElementById("filehint");
+  const url = "http://127.0.0.1:" + PORT() + "/";
+  fh.style.display = SERVER ? "none" : "";
+  fh.innerHTML = window.PLANNER ? t("offline",{url}) : t("nodata");
+  paintStatic();
+  renderBoard(); renderStory(); renderNew();
+  document.getElementById("scriptbox").textContent = P.script || t("noscript");
+  if (manual) toast(t("tupdated"));
+}
+function paintStatic(){
+  document.getElementById("tabs").innerHTML = ["board","story","newshot","script"].map((k,i)=>
+    `<div class="tab ${i===0?'on':''}" data-v="${["board","story","new","script"][i]}">${esc(t(k))}</div>`).join("");
+  wireTabs();
+  document.getElementById("q").placeholder = t("search");
+  document.getElementById("btn-refresh").title = t("refresh");
+  document.getElementById("btn-print").textContent = "🖨 " + t("print");
+  document.getElementById("storyhint").textContent = t("storyhint");
+  document.getElementById("lb-close").textContent = t("lbclose");
+  document.getElementById("lb-help").textContent = t("lbhelp");
+}
+let saveT = {};
+function autoSave(folder){
+  if (!SERVER) return;
+  clearTimeout(saveT[folder]);
+  saveT[folder] = setTimeout(async () => {
+    try{
+      await fetch(API + "/api/save", {method:"POST", body: JSON.stringify(byFolder(folder))});
+      const el = document.getElementById("savestate");
+      if (el) el.textContent = t("tsaved");
+    }catch(e){ toast(t("tsavefail")); }
+  }, 700);
+}
+async function askPrompts(shot){
+  const r = await fetch(API + "/api/prompts", {method:"POST", body: JSON.stringify(shot)})
+              .then(x=>x.json()).catch(()=>null);
+  return r && r.ok ? r.prompts : null;
+}
+
+/* ============================================================ board */
+function renderBoard(){
+  const q = document.getElementById("q").value.toLowerCase();
+  const ch0 = P.channels[0];
+  document.getElementById("board").innerHTML = P.shots
+    .filter(s => !q || (s.folder+" "+(s.desc||"")+" "+(s.cast||"")).toLowerCase().includes(q))
+    .map(s => {
+      const th = thumbOf(s), tk = nextTake(s.folder, ch0.id);
+      const badges = P.channels.map(c => { const n = ((s.renders||{})[c.id]||[]).length;
+        return `<span class="badge ${n>=target(c)?'done':''}">${esc(c.label)} ${n}/${target(c)}</span>`; }).join("");
+      return `<div class="card">
+        <div class="clickzone" onclick="openModal('${esc(s.folder)}')">
+          ${th?`<img class="thumb" loading="lazy" src="${enc(th)}" alt="">`:`<div class="nothumb">${esc(t("noimg"))}</div>`}
+          <div class="body">
+            <div class="code">${esc(s.folder.replace(/_/g," "))} · ${s.sec||"?"}s</div>
+            <div class="meta">${esc(s.desc||"")}</div>
+            <div class="prog">
+              ${(s.picks||[]).length?`<span class="badge" style="background:#3a2a10;color:var(--orange)">★ ${s.picks.length}</span>`:""}
+              ${badges}
+            </div>
+          </div>
+        </div>
+        <button class="cardbtn" onclick="cardCopy('${esc(s.folder)}')">${esc(t("copy"))} · ${esc(t("take"))} ${tk%10+1}</button>
+      </div>`;
+    }).join("");
+}
+function cardCopy(folder){
+  const s = byFolder(folder), ch0 = P.channels[0];
+  const n = (P.takes||[]).length || 1;
+  const i = nextTake(folder, ch0.id) % n;
+  copyText((prompts(s)[ch0.id]||"") + ((P.takes||[])[i] ? "\n\n" + P.takes[i] : ""));
+  takes[folder] = takes[folder]||{}; takes[folder][ch0.id] = i+1; saveTakes();
+  renderBoard();
+  toast(t("tcopytake",{n:i+1,m:n}));
+}
+
+/* ============================================================ storyboard */
+function renderStory(){
+  document.getElementById("story").innerHTML = P.shots.map((s,i)=>{
+    const th = thumbOf(s);
+    const a=opt("angles",s.angle), z=opt("sizes",s.size), m=opt("moves",s.move);
+    return `<div class="sbcard">
+      ${th?`<img class="thumb" loading="lazy" src="${enc(th)}" alt="">`:`<div class="nothumb">—</div>`}
+      <div class="body">
+        <div class="code">${i+1}. ${esc(s.folder.replace(/_/g," "))} <span style="color:var(--dim)">(${s.sec||"?"}s)</span></div>
+        <div class="th">${esc(s.desc||"")}</div>
+        <div class="cam">📷 ${esc(olabel(z))} · ${esc(olabel(a))} · ${esc(olabel(m))}${s.cast?` · 👤 ${esc(s.cast)}`:""}</div>
+      </div></div>`;
+  }).join("");
+}
+
+/* ============================================================ modal */
+let cur = null, ch = null;
+function openModal(folder){
+  cur = byFolder(folder); ch = P.channels[0].id;
+  drawModal();
+  document.getElementById("ov").classList.add("show");
+}
+function closeModal(){ document.getElementById("ov").classList.remove("show"); renderBoard(); renderStory(); }
+function setCh(c){ ch = c; drawModal(); }
+function setF(k,v){ cur[k] = v; autoSave(cur.folder); drawModal(); }
+function setTxt(k,v){ cur[k] = v; autoSave(cur.folder); }
+function setPrompt(v){ prompts(cur)[ch] = v; autoSave(cur.folder); }
+function chipRow(group, sel, field){
+  return `<div class="opts">` + (P.options[group]||[]).map(o =>
+    `<div class="opt ${o.id===sel?'on':''}" onclick="setF('${field}','${o.id}')">${esc(olabel(o))}</div>`).join("") + `</div>`;
+}
+function modalCopy(withTake){
+  const txt = document.getElementById("ptext").value;
+  if (!withTake){ copyText(txt); return; }
+  const n = (P.takes||[]).length || 1;
+  const i = nextTake(cur.folder, ch) % n;
+  copyText(txt + ((P.takes||[])[i] ? "\n\n" + P.takes[i] : ""));
+  takes[cur.folder] = takes[cur.folder]||{}; takes[cur.folder][ch] = i+1; saveTakes();
+  drawModal();
+  toast(t("tcopytake",{n:i+1,m:n}));
+}
+function resetTake(){ takes[cur.folder] = takes[cur.folder]||{}; takes[cur.folder][ch] = 0; saveTakes(); drawModal(); }
+async function regen(){
+  const built = await askPrompts(cur);
+  if (!built){ toast(t("tnoserver")); return; }
+  cur.prompts = built;
+  autoSave(cur.folder); drawModal();
+  toast(t("tregen"));
+}
+function drawModal(){
+  const s = cur;
+  const n = (P.takes||[]).length || 1, tk = nextTake(s.folder, ch) % n;
+  const img = (dir,f) => { const p = enc(`${P.root}/${s.folder}/${dir}${f}`);
+    return `<a href="${p}" target="_blank"><img loading="lazy" src="${p}" title="${esc(f)}" alt=""></a>`; };
+  const refImgs = (s.refs||[]).map(f=>img("ref/",f)).join("") || `<span class="savestate">${esc(t("none"))}</span>`;
+  const rl = renderList(s), picked = new Set(s.picks||[]);
+  const renImgs = rl.map((x,i)=>`
+    <div class="rimg ${picked.has(x.f)?'picked':''}" onclick="openLb(${i})">
+      <img loading="lazy" src="${enc(`${P.root}/${s.folder}/${x.f}`)}" title="${esc(x.f)}" alt="">
+      <span class="ch">${esc(x.ch)}</span>
+    </div>`).join("");
+  const ro = SERVER ? "" : "readonly";
+  const stateLabel = (P.product && P.product.label) || t("state");
+  document.getElementById("modal").innerHTML = `
+    <div style="display:flex;align-items:start;gap:10px">
+      <div style="flex:1"><h2>${esc(s.folder.replace(/_/g," "))} <span style="color:var(--dim);font-size:14px">${s.sec||"?"}s</span></h2>
+        <div class="sub">${esc(s.desc||"")}</div></div>
+      <button onclick="closeModal()">${esc(t("close"))}</button>
+    </div>
+
+    <div class="imglabel">${esc(t("refs"))}</div>
+    <div class="imgs">${refImgs}${SERVER?`
+      <div class="minidrop" id="updrop" onclick="document.getElementById('upfile').click()">${esc(t("addref"))}<span>${esc(t("dropshort"))}</span></div>
+      <input type="file" id="upfile" multiple accept="image/*" style="display:none">`:""}</div>
+    ${renImgs?`<div class="imglabel">${esc(t("rendered"))} (${rl.length})${picked.size?` · ★ ${esc(t("picked"))} ${picked.size}`:""} ${esc(t("clickfull"))}</div><div class="imgs">${renImgs}</div>`:""}
+
+    <div class="seg">${P.channels.map(c=>
+      `<div class="${ch===c.id?'on':''}" onclick="setCh('${c.id}')">${esc(c.label)}</div>`).join("")}</div>
+    <textarea id="ptext" rows="9" ${ro} onchange="setPrompt(this.value)">${esc(prompts(s)[ch]||"")}</textarea>
+    <div class="actions">
+      <button class="pri big" onclick="modalCopy(true)">${esc(t("copytake"))} · ${esc(t("take"))} ${tk+1}/${n}</button>
+      <button onclick="modalCopy(false)">${esc(t("copyonly"))}</button>
+      <button onclick="resetTake()">${esc(t("resettake"))}</button>
+      <span class="sp"></span>
+      <span class="savestate" id="savestate">${esc(SERVER?t("editable"):t("roedit"))}</span>
+    </div>
+
+    <details>
+      <summary>${esc(t("advanced"))}</summary>
+      <div class="adv">
+        <div class="row">
+          <div class="field"><label>${esc(t("sec"))}</label>
+            <input type="number" style="width:90px" value="${s.sec||0}" ${ro} onchange="setTxt('sec',+this.value)"></div>
+          <div class="field" style="flex:1"><label>${esc(t("cast"))}</label>
+            <input type="text" value="${esc(s.cast||"")}" ${ro} onchange="setTxt('cast',this.value)"></div>
+          <div class="field" style="flex:2"><label>${esc(t("desc"))}</label>
+            <input type="text" value="${esc(s.desc||"")}" ${ro} onchange="setTxt('desc',this.value)"></div>
+        </div>
+        <div class="field" style="margin-bottom:10px"><label>${esc(t("size"))}</label>${chipRow("sizes",s.size,"size")}</div>
+        <div class="field" style="margin-bottom:10px"><label>${esc(t("angle"))}</label>${chipRow("angles",s.angle,"angle")}</div>
+        <div class="field" style="margin-bottom:10px"><label>${esc(t("move"))}</label>${chipRow("moves",s.move,"move")}</div>
+        <div class="field" style="margin-bottom:10px"><label>${esc(t("loc"))}</label>${chipRow("locs",s.loc,"loc")}</div>
+        ${(P.options.states||[]).length?`<div class="field" style="margin-bottom:10px"><label>${esc(stateLabel)}</label>${chipRow("states",s.state,"state")}</div>`:""}
+        <div class="field" style="margin-bottom:12px"><label>${esc(t("action"))}</label>
+          <textarea rows="3" ${ro} onchange="setTxt('action',this.value)">${esc(s.action||"")}</textarea></div>
+        ${SERVER?`<button class="pri" onclick="regen()">${esc(t("regen"))}</button>`:""}
+      </div>
+    </details>`;
+  const ud = document.getElementById("updrop");
+  if (ud){
+    const uf = document.getElementById("upfile");
+    uf.onchange = () => { uploadToShot(uf.files); uf.value=""; };
+    ud.ondragover = e => { e.preventDefault(); ud.classList.add("over"); };
+    ud.ondragleave = () => ud.classList.remove("over");
+    ud.ondrop = e => { e.preventDefault(); ud.classList.remove("over"); uploadToShot(e.dataTransfer.files); };
+  }
+}
+async function uploadToShot(fileList){
+  const files = await Promise.all([...fileList].filter(f=>f.type.startsWith("image/")).map(f=>new Promise(res=>{
+    const rd = new FileReader();
+    rd.onload = () => res({name:f.name, b64:rd.result.split(",")[1]});
+    rd.readAsDataURL(f);
+  })));
+  if (!files.length) return;
+  const r = await fetch(API + "/api/upload", {method:"POST",
+    body: JSON.stringify({folder:cur.folder, files})}).then(x=>x.json()).catch(()=>({ok:false}));
+  if (r.ok){ cur.refs = r.refs; drawModal(); toast(t("tadded")); }
+  else toast(t("tupfail"));
+}
+
+/* ============================================================ lightbox */
+let lbIdx = 0;
+function openLb(i){ lbIdx = i; drawLb(); document.getElementById("lb").classList.add("show"); }
+function closeLb(){ document.getElementById("lb").classList.remove("show"); drawModal(); }
+function lbStep(d){ const n = renderList(cur).length; lbIdx = (lbIdx + d + n) % n; drawLb(); }
+function drawLb(){
+  const rl = renderList(cur), x = rl[lbIdx];
+  if (!x) return;
+  document.getElementById("lb-img").src = enc(`${P.root}/${cur.folder}/${x.f}`);
+  document.getElementById("lb-cap").textContent = `${lbIdx+1}/${rl.length} · ${x.ch} · ${x.f}`;
+  const on = (cur.picks||[]).includes(x.f), st = document.getElementById("lb-star");
+  st.className = "star" + (on ? " on" : "");
+  st.textContent = on ? t("lbunpick") : t("lbpick");
+  st.style.display = SERVER ? "" : "none";
+}
+function lbPick(){
+  if (!SERVER) return;
+  const x = renderList(cur)[lbIdx];
+  cur.picks = cur.picks || [];
+  const i = cur.picks.indexOf(x.f);
+  i >= 0 ? cur.picks.splice(i,1) : cur.picks.push(x.f);
+  autoSave(cur.folder);
+  drawLb();
+}
+document.addEventListener("keydown", e => {
+  if (document.getElementById("lb").classList.contains("show")){
+    if (e.key === "ArrowRight") lbStep(1);
+    else if (e.key === "ArrowLeft") lbStep(-1);
+    else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); lbPick(); }
+    else if (e.key === "Escape") closeLb();
+  } else if (e.key === "Escape" && document.getElementById("ov").classList.contains("show")
+             && document.activeElement.tagName !== "TEXTAREA") closeModal();
+});
+
+/* ============================================================ new shot */
+let nf = null;
+function suggestName(){
+  let mx = 0;
+  P.shots.forEach(s => { const m = s.folder.match(/^Shot_(\d+)/i); if (m) mx = Math.max(mx, +m[1]); });
+  return "Shot_" + String(mx+1).padStart(2,"0") + "_";
+}
+function firstId(g){ const o = (P.options[g]||[])[0]; return o ? o.id : ""; }
+function blankNf(){
+  return { sel:{sizes:firstId("sizes"),angles:firstId("angles"),moves:firstId("moves"),
+                locs:firstId("locs"),states:firstId("states")},
+           cast:new Set(), files:[], sheets:new Set(),
+           name:suggestName(), sec:3, desc:"", castExtra:"" };
+}
+function syncNf(){
+  if (!nf || !document.getElementById("nf-name")) return;
+  const g = id => (document.getElementById(id) || {}).value || "";
+  nf.name = g("nf-name"); nf.sec = +g("nf-sec") || 3;
+  nf.desc = g("nf-desc"); nf.castExtra = g("nf-cast");
+}
+function saveDraft(){
+  syncNf();
+  if (!nf) return;
+  try{ localStorage.setItem(DRAFTKEY, JSON.stringify({name:nf.name, sec:nf.sec, desc:nf.desc,
+    castExtra:nf.castExtra, sel:nf.sel, cast:[...nf.cast], sheets:[...nf.sheets]})); }catch(e){}
+}
+function clearDraft(){ try{ localStorage.removeItem(DRAFTKEY); }catch(e){} }
+function normFolder(n){ return (n||"").trim().replace(/[^\w\-]+/g,"_").replace(/^_+|_+$/g,""); }
+function castValue(){ return [...nf.cast, (nf.castExtra||"").trim()].filter(Boolean).join(", "); }
+function newShotObject(){
+  syncNf();
+  return { folder:normFolder(nf.name), sec:nf.sec||3, cast:castValue(),
+           desc:(nf.desc||"").trim(), action:"",
+           angle:nf.sel.angles, size:nf.sel.sizes, move:nf.sel.moves,
+           loc:nf.sel.locs, state:nf.sel.states };
+}
+let previewT;
+function updatePreview(){
+  const box = document.getElementById("nf-preview");
+  if (!box || !nf) return;
+  const s = newShotObject(), nref = nf.files.length + nf.sheets.size;
+  document.getElementById("nf-target").textContent = s.folder
+    ? `${P.root}/${s.folder}/  ·  ` + (nref ? t("nrefs",{n:nref}) : t("nnoref"))
+    : t("nunnamed");
+  clearTimeout(previewT);
+  previewT = setTimeout(async () => {
+    const built = await askPrompts(s);
+    if (built) box.textContent = P.channels.map(c =>
+      (P.channels.length>1 ? `— ${c.label} —\n` : "") + (built[c.id]||"")).join("\n\n");
+  }, 220);
+}
+function renderNew(fresh){
+  const el = document.getElementById("v-new");
+  if (!SERVER){ nf = null; el.innerHTML = `<div class="hint">${t("nofform")}</div>`; return; }
+  // ฟอร์มกรอกค้างอยู่ อย่าไปล้างของเขา / never wipe a half-filled form on auto-refresh
+  if (!fresh && nf && document.getElementById("nf-name")){ updatePreview(); return; }
+  nf = blankNf();
+  if (!fresh){
+    try{
+      const d = JSON.parse(localStorage.getItem(DRAFTKEY) || "null");
+      if (d){ Object.assign(nf, {name:d.name, sec:d.sec, desc:d.desc, castExtra:d.castExtra});
+              if (d.sel) nf.sel = Object.assign(nf.sel, d.sel);
+              nf.cast = new Set(d.cast||[]); nf.sheets = new Set(d.sheets||[]); }
+    }catch(e){}
+  } else clearDraft();
+  const stateLabel = (P.product && P.product.label) || t("state");
+  el.innerHTML = `
+    <div class="fs"><h3><span class="num">1</span> ${esc(t("n1"))}</h3>
+      <div class="row" style="margin:0">
+        <div class="field"><label>${esc(t("nname"))}</label>
+          <input type="text" id="nf-name" value="${esc(nf.name)}" style="width:280px;font-size:16px"></div>
+        <div class="field"><label>${esc(t("sec"))}</label>
+          <input type="number" id="nf-sec" value="${nf.sec}" style="width:90px;font-size:16px"></div>
+      </div></div>
+
+    <div class="fs"><h3><span class="num">2</span> ${esc(t("n2"))}</h3>
+      <div class="field" style="margin-bottom:12px"><label>${esc(t("size"))}</label><div class="opts" id="n-sizes"></div></div>
+      <div class="field" style="margin-bottom:12px"><label>${esc(t("angle"))}</label><div class="opts" id="n-angles"></div></div>
+      <div class="field"><label>${esc(t("move"))}</label><div class="opts" id="n-moves"></div></div></div>
+
+    <div class="fs"><h3><span class="num">3</span> ${esc(t("n3"))}</h3>
+      <div class="field" style="margin-bottom:12px"><label>${esc(t("loc"))}</label><div class="opts" id="n-locs"></div></div>
+      ${(P.options.states||[]).length?`<div class="field"><label>${esc(stateLabel)}</label><div class="opts" id="n-states"></div></div>`:""}</div>
+
+    <div class="fs"><h3><span class="num">4</span> ${esc(t("n4"))}</h3>
+      <div class="opts" id="n-cast" style="margin-bottom:10px"></div>
+      <input type="text" id="nf-cast" value="${esc(nf.castExtra||"")}" placeholder="${esc(t("ncastph"))}" style="width:100%"></div>
+
+    <div class="fs"><h3><span class="num">5</span> ${esc(t("n5"))}</h3>
+      <textarea id="nf-desc" rows="4" style="font-size:15px" placeholder="${esc(t("ndescph"))}">${esc(nf.desc||"")}</textarea></div>
+
+    <div class="fs"><h3><span class="num">6</span> ${esc(t("n6"))}</h3>
+      <div class="drop" id="nf-drop">${esc(t("ndrop"))}</div>
+      <input type="file" id="nf-file" multiple accept="image/*" style="display:none">
+      <div class="filelist" id="nf-filelist"></div>
+      ${(P.sheets||[]).length?`<div class="field" style="margin-top:16px"><label>${esc(t("nsheets"))}</label>
+        <div class="sheetgrid">${P.sheets.map(p=>`
+          <div class="sh ${nf.sheets.has(p)?'on':''}" data-p="${esc(p)}" onclick="toggleSheet(this)">
+            <img loading="lazy" src="${enc(p)}" alt=""><div class="cap">${esc(p.split("/").pop())}</div>
+          </div>`).join("")}</div></div>`:""}</div>
+
+    <div class="fs"><h3><span class="num">7</span> ${esc(t("n7"))}</h3>
+      <div class="field"><label>${esc(t("ntarget"))}</label>
+        <div id="nf-target" style="color:var(--cyan);font-weight:700;margin-bottom:10px">—</div></div>
+      <div class="field"><label>${esc(t("npreview"))}</label>
+        <pre class="script" id="nf-preview" style="max-height:230px;overflow:auto;padding:14px;font-size:12.5px;margin:0"></pre></div></div>
+
+    <button class="pri big" id="nf-go" style="margin-bottom:30px" onclick="addShot()">${esc(t("ncreate"))}</button>`;
+
+  for (const g of Object.keys(nf.sel)){
+    const box = document.getElementById("n-"+g);
+    if (!box) continue;
+    box.innerHTML = (P.options[g]||[]).map(o=>
+      `<div class="opt ${o.id===nf.sel[g]?'on':''}" data-g="${g}" data-id="${o.id}">${esc(olabel(o))}</div>`).join("");
+    box.onclick = e => { const el2=e.target.closest(".opt"); if(!el2) return;
+      nf.sel[el2.dataset.g]=el2.dataset.id;
+      box.querySelectorAll(".opt").forEach(x=>x.classList.toggle("on",x.dataset.id===nf.sel[el2.dataset.g]));
+      saveDraft(); updatePreview(); };
+  }
+  const castBox = document.getElementById("n-cast");
+  castBox.innerHTML = (P.castPresets||[]).map(c=>
+    `<div class="opt ${nf.cast.has(c)?'on':''}" data-c="${esc(c)}">${esc(c)}</div>`).join("");
+  castBox.onclick = e => { const el2=e.target.closest(".opt"); if(!el2) return;
+    const c = el2.dataset.c;
+    nf.cast.has(c) ? nf.cast.delete(c) : nf.cast.add(c);
+    el2.classList.toggle("on", nf.cast.has(c));
+    saveDraft(); updatePreview(); };
+
+  const drop = document.getElementById("nf-drop"), fin = document.getElementById("nf-file");
+  drop.onclick = () => fin.click();
+  fin.onchange = () => { readFiles(fin.files, nf.files, "nf-filelist"); fin.value=""; };
+  const over = on => e => { e.preventDefault(); drop.classList.toggle("over", on); };
+  drop.ondragover = over(true); drop.ondragleave = over(false);
+  const zone = document.getElementById("v-new");   // ลากมาวางตรงไหนก็ได้ / drop anywhere
+  zone.ondragover = over(true); zone.ondragleave = over(false);
+  zone.ondrop = e => { e.preventDefault(); drop.classList.remove("over");
+                       readFiles(e.dataTransfer.files, nf.files, "nf-filelist"); };
+  ["nf-name","nf-sec","nf-desc","nf-cast"].forEach(id =>
+    document.getElementById(id).oninput = () => { saveDraft(); updatePreview(); });
+  updatePreview();
+}
+function toggleSheet(el){
+  const p = el.dataset.p;
+  nf.sheets.has(p) ? nf.sheets.delete(p) : nf.sheets.add(p);
+  el.classList.toggle("on", nf.sheets.has(p));
+  saveDraft(); updatePreview();
+}
+function readFiles(fileList, targetArr, listId){
+  [...fileList].forEach(f => {
+    if (!f.type.startsWith("image/")) return;
+    const rd = new FileReader();
+    rd.onload = () => { targetArr.push({name:f.name, b64:rd.result.split(",")[1], url:rd.result});
+                        drawFileList(targetArr, listId); };
+    rd.readAsDataURL(f);
+  });
+}
+function drawFileList(targetArr, listId){
+  document.getElementById(listId).innerHTML = targetArr.map((f,i)=>`
+    <div class="fitem"><img src="${f.url}" title="${esc(f.name)}" alt="">
+      <div class="x" onclick="removeFile(${i},'${listId}')">✕</div></div>`).join("");
+  updatePreview();
+}
+function removeFile(i, listId){ nf.files.splice(i,1); drawFileList(nf.files, listId); }
+async function addShot(){
+  const btn = document.getElementById("nf-go"), s = newShotObject();
+  if (!s.folder){ toast(t("nnoname")); document.getElementById("nf-name").focus(); return; }
+  if (/^[A-Za-z]+_\d+$/.test(s.folder) && !confirm(t("nbare",{f:s.folder}))){
+    document.getElementById("nf-name").focus(); return;
+  }
+  const dup = P.shots.some(x => x.folder === s.folder);
+  if (dup && !confirm(t("ndup",{f:s.folder}))) return;
+  s.overwrite = dup;
+  s.prompts = await askPrompts(s) || {};
+  s.files = nf.files.map(f=>({name:f.name, b64:f.b64}));
+  s.sheets = [...nf.sheets];
+
+  const label = btn.textContent;
+  btn.disabled = true; btn.textContent = t("ncreating");
+  const r = await fetch(API + "/api/newshot", {method:"POST", body: JSON.stringify(s)})
+              .then(x=>x.json()).catch(()=>({ok:false, error:t("tnoserver")}));
+  btn.disabled = false; btn.textContent = label;
+  if (r.ok){
+    clearDraft(); nf = null;
+    await refresh(); renderNew(true);
+    document.querySelector('[data-v="board"]').click();
+    toast(t("tcreated",{f:r.folder, n:r.copied.length}));
+    openModal(r.folder);
+  } else toast(t("tcreatefail") + (r.error||""));
+}
+
+/* ============================================================ misc */
+function copyText(txt){
+  if (navigator.clipboard) navigator.clipboard.writeText(txt).then(()=>toast(t("tcopied")), ()=>fallbackCopy(txt));
+  else fallbackCopy(txt);
+}
+function fallbackCopy(txt){
+  const ta=document.createElement("textarea"); ta.value=txt; document.body.appendChild(ta);
+  ta.select(); document.execCommand("copy"); ta.remove(); toast(t("tcopied"));
+}
+let toastT;
+function toast(m){ const el=document.getElementById("toast"); el.textContent=m; el.style.display="block";
+  clearTimeout(toastT); toastT=setTimeout(()=>el.style.display="none",3400); }
+function wireTabs(){
+  document.querySelectorAll(".tab").forEach(tab => tab.onclick = () => {
+    document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("on",x===tab));
+    for (const v of ["board","story","new","script"])
+      document.getElementById("v-"+v).style.display = tab.dataset.v===v ? "" : "none";
+  });
+}
+document.getElementById("q").oninput = renderBoard;
+let lastFocus = 0;
+window.addEventListener("focus", () => {
+  if (SERVER && Date.now()-lastFocus > 10000){ lastFocus = Date.now(); refresh(); }
+});
+refresh();
+</script>
+</body>
+</html>

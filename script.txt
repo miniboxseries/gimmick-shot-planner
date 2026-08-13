@@ -1,0 +1,10 @@
+SUNRISE COFFEE — 30" demo spot
+(ตัวอย่างสคริปต์ — แทนที่ไฟล์นี้ด้วยสคริปต์จริงของคุณ / sample script, replace with your own)
+
+00:00  SFX: alarm, one slap.
+00:02  VO: "เช้าที่ดี ไม่ได้เริ่มที่กาแฟแก้วแรก"
+       VO: "A good morning doesn't start with the first cup."
+00:08  VO: "มันเริ่มที่กาแฟแก้วที่สอง — ที่ยังร้อนอยู่"
+       VO: "It starts with the second one. Still hot."
+00:22  SUPER: SUNRISE COFFEE
+00:26  SUPER: Still hot. Four hours later.
