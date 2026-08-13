@@ -126,6 +126,21 @@
   .imgs .rimg.picked::after{content:"★";position:absolute;top:3px;right:6px;font-size:15px;color:var(--orange)}
   .imgs .rimg .ch{position:absolute;left:5px;bottom:5px;background:#000a;color:#cdd3dd;font-size:10px;
                   padding:1px 7px;border-radius:10px}
+  /* ---- phones ---- */
+  @media (max-width:760px){
+    header{padding:9px 12px;gap:8px}
+    header h1{font-size:16px;white-space:normal;width:100%}
+    main{padding:12px}
+    .tab{padding:7px 12px;font-size:14px}
+    #q{flex:1;min-width:0;width:auto}
+    .grid,.sb{grid-template-columns:1fr}
+    .modal{padding:16px}
+    .seg{width:100%}
+    .seg div{flex:1;text-align:center;padding:9px 8px}
+    .fs{padding:14px}
+    .imgs a img,.imgs .rimg img{height:96px}
+    #lb .navbtn{width:44px;height:44px;font-size:24px}
+  }
   @media print{
     header,.no-print,.cardbtn{display:none!important}
     body{background:#fff;color:#000}
