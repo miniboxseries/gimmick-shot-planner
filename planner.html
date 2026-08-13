@@ -183,6 +183,7 @@ th:{board:"ช็อตทั้งหมด",story:"สตอรี่บอร
   live:"● บันทึกอัตโนมัติ",ro:"ดูอย่างเดียว",
   offline:'ตอนนี้เปิดแบบ "ดูอย่างเดียว" — สร้างช็อตใหม่ / แก้ prompt ยังไม่ได้<br>1) ดับเบิลคลิก <b>Start Planner.command</b> (หรือสั่ง <code>python3 shot_planner.py</code>) 1 ครั้ง<br>2) แล้วเปิดหน้านี้ที่ <a href="{url}">{url}</a> (หรือกด 🔄 เดี๋ยวเด้งให้เอง)',
   nodata:"ยังไม่มีข้อมูล — สั่ง <code>python3 shot_planner.py</code> ก่อน",
+  demo:'นี่คือ<b>หน้าเดโมอ่านอย่างเดียว</b> — กดดูช็อต สตอรี่บอร์ด และก๊อป prompt ได้ แต่แก้/สร้างช็อตใหม่ไม่ได้<br>ถ้าอยากใช้จริง โหลดไปรันบนเครื่องตัวเอง (ฟรี ไม่ต้องลงอะไรนอกจาก Python) → <a href="{repo}">{repo}</a>',
   noimg:"ยังไม่มีภาพ",copy:"📋 คัดลอก prompt",take:"Take",
   storyhint:"กด 🖨 แล้วเลือก Save as PDF = ได้สตอรี่บอร์ดส่งลูกค้า",
   noscript:"(ยังไม่มีไฟล์สคริปต์)",
@@ -219,6 +220,7 @@ en:{board:"All shots",story:"Storyboard",newshot:"➕ New shot",script:"Script",
   live:"● auto-saving",ro:"read-only",
   offline:'Read-only mode — you cannot create shots or edit prompts.<br>1) Run <b>Start Planner.command</b> (or <code>python3 shot_planner.py</code>) once<br>2) then open this page at <a href="{url}">{url}</a> (or hit 🔄 and it will jump for you)',
   nodata:"No data yet — run <code>python3 shot_planner.py</code> first",
+  demo:'This is a <b>read-only demo</b> — browse the shots, the storyboard and the prompts. Editing and creating shots needs the tool running locally.<br>Grab it here (free, Python only, no install) → <a href="{repo}">{repo}</a>',
   noimg:"no image yet",copy:"📋 Copy prompt",take:"Take",
   storyhint:"Hit 🖨 and choose Save as PDF to get a client-ready storyboard",
   noscript:"(no script file)",
@@ -263,6 +265,7 @@ const t = (k,vars) => { let s = (L[k] !== undefined ? L[k] : (STR.en[k] || k));
   if (vars) for (const v in vars) s = s.split("{"+v+"}").join(vars[v]);
   return s; };
 const LSKEY = "gsp_takes", DRAFTKEY = "gsp_newshot_draft";
+const REPO = "https://github.com/miniboxseries/gimmick-shot-planner";
 let takes = JSON.parse(localStorage.getItem(LSKEY) || "{}");   // {folder:{channel:n}}
 const saveTakes = () => localStorage.setItem(LSKEY, JSON.stringify(takes));
 
@@ -308,8 +311,11 @@ async function refresh(manual){
   document.getElementById("mode").className = "pill" + (SERVER ? " live" : "");
   const fh = document.getElementById("filehint");
   const url = "http://127.0.0.1:" + PORT() + "/";
+  const local = ["127.0.0.1","localhost",""].includes(location.hostname);
   fh.style.display = SERVER ? "none" : "";
-  fh.innerHTML = window.PLANNER ? t("offline",{url}) : t("nodata");
+  fh.innerHTML = !local ? t("demo",{repo:REPO})
+               : window.PLANNER ? t("offline",{url}) : t("nodata");
+  if (!local) fh.style.cssText += ";border-color:var(--cyan);color:var(--cyan)";
   paintStatic();
   renderBoard(); renderStory(); renderNew();
   document.getElementById("scriptbox").textContent = P.script || t("noscript");
