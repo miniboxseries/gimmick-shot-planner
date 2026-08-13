@@ -6,7 +6,9 @@ the shot it belongs to, and prints a client-ready storyboard.
 
 **[▶ Try the live demo](https://miniboxseries.github.io/gimmick-shot-planner/)** · **[อ่านภาษาไทยที่นี่ / Thai version →](README.th.md)**
 
-The demo is the tool itself, read-only, with a sample project loaded — no download, no sign-up.
+The demo is the tool itself, fully working, with a sample project loaded — no download, no sign-up.
+Create shots, edit prompts, copy them out; your work is stored in your own browser and never uploaded.
+When you want it on disk with your renders, hit 💾 and drop the `project.json` into the downloaded tool.
 
 ![board](docs/board.png)
 
@@ -56,6 +58,18 @@ The repo ships with a small demo project (a coffee-flask spot) so you can see it
 
 > Keep it open at `http://127.0.0.1:8765/` — opening `planner.html` as a `file://` path gives you a
 > read-only view (the page will offer to jump to the server for you).
+
+## Two ways to run it
+
+|  | In a browser (the demo link) | On your machine |
+|---|---|---|
+| Plan shots, build and edit prompts | ✅ | ✅ |
+| Storyboard → PDF | ✅ | ✅ |
+| Where the project lives | your browser's local storage, exportable as `project.json` | `project.json` on disk |
+| Reference images, render tracking, starred frames | — | ✅ |
+
+Same tool, same prompt output — the browser version simply has no folder to put images in.
+`project.json` moves freely between the two: 💾 downloads it, 📂 loads one back in.
 
 ## The four tabs
 

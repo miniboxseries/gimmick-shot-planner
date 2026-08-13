@@ -162,6 +162,11 @@
   <div class="sp"></div>
   <input type="text" id="q" placeholder="…" style="width:150px">
   <button onclick="refresh(true)" id="btn-refresh">🔄</button>
+  <button id="btn-export" onclick="exportProject()" style="display:none">💾</button>
+  <button id="btn-import" onclick="document.getElementById('impfile').click()" style="display:none">📂</button>
+  <button id="btn-reset" onclick="resetProject()" style="display:none">↺</button>
+  <input type="file" id="impfile" accept="application/json,.json" style="display:none"
+         onchange="if(this.files[0])importProject(this.files[0]); this.value='';">
   <button class="pri" onclick="window.print()" id="btn-print">🖨</button>
 </header>
 
@@ -201,6 +206,16 @@ th:{board:"ช็อตทั้งหมด",story:"สตอรี่บอร
   live:"● บันทึกอัตโนมัติ",ro:"ดูอย่างเดียว",
   offline:'ตอนนี้เปิดแบบ "ดูอย่างเดียว" — สร้างช็อตใหม่ / แก้ prompt ยังไม่ได้<br>1) ดับเบิลคลิก <b>Start Planner.command</b> (หรือสั่ง <code>python3 shot_planner.py</code>) 1 ครั้ง<br>2) แล้วเปิดหน้านี้ที่ <a href="{url}">{url}</a> (หรือกด 🔄 เดี๋ยวเด้งให้เอง)',
   nodata:"ยังไม่มีข้อมูล — สั่ง <code>python3 shot_planner.py</code> ก่อน",
+  browser:"● ทำงานในเบราว์เซอร์",
+  browserhint:'ตอนนี้ทำงาน<b>ในเบราว์เซอร์นี้ล้วนๆ</b> — สร้างช็อต แก้ prompt ก๊อปไปใช้ได้เลย งานเก็บไว้ในเครื่องคุณเอง ไม่ได้ส่งไปไหน<br>กด 💾 เพื่อโหลดเป็นไฟล์ project.json เก็บไว้ (เอาไปใช้ต่อกับตัวเต็มที่ลงในเครื่องได้) · <a href="{repo}">ตัวเต็ม + วิธีใช้</a>',
+  export:"ดาวน์โหลด project.json",import:"นำเข้า project.json",reset:"เริ่มใหม่จากตัวอย่าง",
+  del:"🗑 ลบช็อตนี้",
+  ndel:'ลบช็อต "{f}"?\n(ถ้ารันบนเครื่อง: โฟลเดอร์ที่ยังมีรูปจะถูกย้ายไปไว้ที่ _deleted/ ไม่ได้ลบทิ้ง)',
+  nreset:"ล้างงานที่ทำไว้ในเบราว์เซอร์ แล้วกลับไปเริ่มจากโปรเจกต์ตัวอย่าง?",
+  tsavedlocal:"บันทึกในเบราว์เซอร์แล้ว ✓",tcreatedlocal:"✓ สร้าง {f} แล้ว (เก็บในเบราว์เซอร์)",
+  tdeleted:"ลบ {f} แล้ว",tdeletedmoved:"ลบ {f} แล้ว — โฟลเดอร์ที่มีรูปย้ายไป _deleted/",texported:"โหลดไฟล์ project.json แล้ว ✓",
+  timported:"โหลดโปรเจกต์เข้ามาแล้ว {n} ช็อต",tbadjson:"ไฟล์นี้ไม่ใช่ project.json ที่ถูกต้อง",
+  tfull:"พื้นที่เก็บในเบราว์เซอร์เต็ม — กด 💾 เก็บไฟล์ไว้ก่อนดีกว่า",
   demo:'นี่คือ<b>หน้าเดโมอ่านอย่างเดียว</b> — กดดูช็อต สตอรี่บอร์ด และก๊อป prompt ได้ แต่แก้/สร้างช็อตใหม่ไม่ได้<br>ถ้าอยากใช้จริง โหลดไปรันบนเครื่องตัวเอง (ฟรี ไม่ต้องลงอะไรนอกจาก Python) → <a href="{repo}">{repo}</a>',
   noimg:"ยังไม่มีภาพ",copy:"📋 คัดลอก prompt",take:"Take",
   storyhint:"กด 🖨 แล้วเลือก Save as PDF = ได้สตอรี่บอร์ดส่งลูกค้า",
@@ -238,6 +253,16 @@ en:{board:"All shots",story:"Storyboard",newshot:"➕ New shot",script:"Script",
   live:"● auto-saving",ro:"read-only",
   offline:'Read-only mode — you cannot create shots or edit prompts.<br>1) Run <b>Start Planner.command</b> (or <code>python3 shot_planner.py</code>) once<br>2) then open this page at <a href="{url}">{url}</a> (or hit 🔄 and it will jump for you)',
   nodata:"No data yet — run <code>python3 shot_planner.py</code> first",
+  browser:"● running in your browser",
+  browserhint:'This runs <b>entirely in your browser</b> — create shots, edit prompts, copy them out. Your work stays on your machine and is never uploaded.<br>Hit 💾 to download it as project.json (it drops straight into the desktop tool) · <a href="{repo}">get the full version</a>',
+  export:"Download project.json",import:"Import project.json",reset:"Start over from the sample",
+  del:"🗑 Delete this shot",
+  ndel:'Delete shot "{f}"?\n(Running locally: a folder that still holds images is moved to _deleted/, not erased.)',
+  nreset:"Clear the work stored in this browser and start again from the sample project?",
+  tsavedlocal:"saved in your browser ✓",tcreatedlocal:"✓ created {f} (stored in your browser)",
+  tdeleted:"{f} removed",tdeletedmoved:"{f} removed — its images were moved to _deleted/",texported:"project.json downloaded ✓",
+  timported:"project loaded — {n} shots",tbadjson:"that file is not a valid project.json",
+  tfull:"browser storage is full — hit 💾 to save your work to a file",
   demo:'This is a <b>read-only demo</b> — browse the shots, the storyboard and the prompts. Editing and creating shots needs the tool running locally.<br>Grab it here (free, Python only, no install) → <a href="{repo}">{repo}</a>',
   noimg:"no image yet",copy:"📋 Copy prompt",take:"Take",
   storyhint:"Hit 🖨 and choose Save as PDF to get a client-ready storyboard",
@@ -282,8 +307,99 @@ const API = location.protocol === "file:" ? "http://127.0.0.1:" + PORT() : "";
 const t = (k,vars) => { let s = (L[k] !== undefined ? L[k] : (STR.en[k] || k));
   if (vars) for (const v in vars) s = s.split("{"+v+"}").join(vars[v]);
   return s; };
-const LSKEY = "gsp_takes", DRAFTKEY = "gsp_newshot_draft";
+const LSKEY = "gsp_takes", DRAFTKEY = "gsp_newshot_draft", PKEY = "gsp_project_v1";
 const REPO = "https://github.com/miniboxseries/gimmick-shot-planner";
+
+/* ============================================================ browser mode
+   ไม่มีเซิร์ฟเวอร์ = ทำงานในเบราว์เซอร์ล้วน เก็บงานไว้ในเครื่องคนใช้ แล้วโหลด project.json ออกไปได้
+   No server = everything runs in the browser, stored locally, exportable as project.json */
+let BROWSER = false;
+const CAN_EDIT = () => SERVER || BROWSER;
+function saveLocal(){
+  if (!BROWSER) return;
+  try{ localStorage.setItem(PKEY, JSON.stringify(P)); }
+  catch(e){ toast(t("tfull")); }
+}
+function loadLocal(){
+  try{ return JSON.parse(localStorage.getItem(PKEY) || "null"); }catch(e){ return null; }
+}
+/* ตัวสร้าง prompt ฝั่งเบราว์เซอร์ — ต้องให้ผลตรงกับ build_prompt() ใน shot_planner.py */
+const TPL = {
+  full:"{head}\n\n{camera_line} {action_line}\n\n{product}\n\n{state}\n\n{location_line} {people_line}\n\n{tail}",
+  tags:"{size} {angle}, {product_short}, {state_short}, {action}, {loc_short}, {tail_short}"
+};
+const shortOf = o => o.short || (o.en||"").split(" — ")[0];
+const tidy = x => x.replace(/[ \t]+/g," ").replace(/ *\n/g,"\n").replace(/\n{3,}/g,"\n\n").trim();
+const tidyTags = x => tidy(x).replace(/\n/g," ").split(",").map(s=>s.trim()).filter(Boolean).join(", ");
+function buildPromptJS(s, c){
+  const z=opt("sizes",s.size), a=opt("angles",s.angle), m=opt("moves",s.move),
+        l=opt("locs",s.loc), st=opt("states",s.state);
+  const prod = P.product||{}, pr = P.prompt||{};
+  const on = !!prod.block && !["na","",null,undefined].includes(s.state);
+  const action = (s.action || s.desc || "").trim(), cast = (s.cast||"").trim();
+  const V = { head:pr.head||"", tail:pr.tail||"", tail_short:pr.tail_short||"",
+    product:on?(prod.block||""):"", product_short:on?(prod.short||""):"",
+    state:on?(st.en||""):"", state_short:on?shortOf(st):"",
+    size:z.en||"", angle:a.en||"", move:m.en||"", loc:l.en||"", loc_short:shortOf(l),
+    cast, action, desc:s.desc||"", folder:s.folder||"", sec:s.sec||0 };
+  const cam = [V.size,V.angle,V.move].filter(Boolean).join(", ");
+  V.camera_line   = cam ? `CAMERA: ${cam}.` : "";
+  V.action_line   = action ? `ACTION: ${action}` : "";
+  V.location_line = V.loc ? `LOCATION: ${V.loc}.` : "";
+  V.people_line   = cast ? `PEOPLE: ${cast}.` : "";
+  const style = c.style || "full";
+  const out = (c.template || TPL[style] || TPL.full).replace(/\{(\w+)\}/g, (_,k)=> V[k]!==undefined ? V[k] : "");
+  return (style === "tags" && !c.template) ? tidyTags(out) : tidy(out);
+}
+const buildAllJS = s => Object.fromEntries(P.channels.map(c => [c.id, buildPromptJS(s,c)]));
+
+/* โหลดออกไปเป็น project.json ที่เอาไปวางในเครื่องแล้วใช้ต่อได้เลย */
+function toProjectJson(){
+  const keep = s => ({folder:s.folder, sec:s.sec, size:s.size, angle:s.angle, move:s.move,
+                      loc:s.loc, state:s.state, cast:s.cast, desc:s.desc, action:s.action||"",
+                      picks:s.picks||[]});
+  return { name:P.name, lang:P.lang, port:P.port||8765,
+    shots_dir:P.root||"shots", sheets_dir:"sheets", script_file:"script.txt",
+    channels:P.channels, prompt:P.prompt||{}, product:P.product||{},
+    options:P.options, cast_presets:P.castPresets||[], takes:P.takes||[],
+    shots:P.shots.map(keep) };
+}
+function exportProject(){
+  const blob = new Blob([JSON.stringify(toProjectJson(), null, 2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "project.json";
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
+  toast(t("texported"));
+}
+function importProject(file){
+  const rd = new FileReader();
+  rd.onload = () => {
+    let j;
+    try{ j = JSON.parse(rd.result); }catch(e){ toast(t("tbadjson")); return; }
+    if (!j || !Array.isArray(j.shots)){ toast(t("tbadjson")); return; }
+    P = Object.assign({}, EMPTY, {
+      name:j.name||"Project", lang:j.lang||"th", port:j.port||8765,
+      root:j.shots_dir||"shots", sheets:[], takes:j.takes||[], script:"",
+      options:j.options||EMPTY.options, castPresets:j.cast_presets||[],
+      channels:(j.channels&&j.channels.length)?j.channels:EMPTY.channels,
+      product:j.product||{}, prompt:j.prompt||{},
+      shots:(j.shots||[]).map(s=>Object.assign({picks:[],refs:[],renders:{},prompts:{}}, s))
+    });
+    P.shots.forEach(s => s.prompts = buildAllJS(s));
+    L = STR[P.lang] || STR.th;
+    saveLocal(); nf = null; clearDraft();
+    paintStatic(); renderBoard(); renderStory(); renderNew(true);
+    toast(t("timported",{n:P.shots.length}));
+  };
+  rd.readAsText(file);
+}
+function resetProject(){
+  if (!confirm(t("nreset"))) return;
+  localStorage.removeItem(PKEY); clearDraft();
+  location.reload();
+}
 let takes = JSON.parse(localStorage.getItem(LSKEY) || "{}");   // {folder:{channel:n}}
 const saveTakes = () => localStorage.setItem(LSKEY, JSON.stringify(takes));
 
@@ -314,8 +430,13 @@ const prompts = s => (s.prompts = s.prompts || {});
 async function refresh(manual){
   try{
     const r = await fetch(API + "/api/data", {cache:"no-store"});
-    P = await r.json(); SERVER = true;
-  }catch(e){ SERVER = false; }
+    P = await r.json(); SERVER = true; BROWSER = false;
+  }catch(e){
+    SERVER = false;
+    // ไม่มีเซิร์ฟเวอร์ -> ทำงานในเบราว์เซอร์: งานที่เคยทำไว้ก่อน ถ้าไม่มีก็เริ่มจากตัวอย่างที่ติดมากับหน้า
+    BROWSER = true;
+    P = loadLocal() || window.PLANNER || EMPTY;
+  }
   L = STR[P.lang] || STR.th;
   // เปิดจากไฟล์ตรงๆ แต่เซิร์ฟเวอร์ทำงานอยู่ -> ย้ายไปเปิดผ่านเซิร์ฟเวอร์ จะได้แก้/สร้างช็อตได้จริง
   if (SERVER && location.protocol === "file:" && !sessionStorage.getItem("gsp_nojump")){
@@ -325,15 +446,15 @@ async function refresh(manual){
   }
   document.getElementById("brand").innerHTML = esc(P.name) + ` <span>${SERVER||window.PLANNER?"Shot Planner":""}</span>`;
   document.title = P.name + " — Shot Planner";
-  document.getElementById("mode").textContent = SERVER ? t("live") : t("ro");
-  document.getElementById("mode").className = "pill" + (SERVER ? " live" : "");
+  document.getElementById("mode").textContent = SERVER ? t("live") : t("browser");
+  document.getElementById("mode").className = "pill" + (SERVER ? " live" : " live");
   const fh = document.getElementById("filehint");
   const url = "http://127.0.0.1:" + PORT() + "/";
-  const local = ["127.0.0.1","localhost",""].includes(location.hostname);
   fh.style.display = SERVER ? "none" : "";
-  fh.innerHTML = !local ? t("demo",{repo:REPO})
-               : window.PLANNER ? t("offline",{url}) : t("nodata");
-  if (!local) fh.style.cssText += ";border-color:var(--cyan);color:var(--cyan)";
+  fh.innerHTML = t("browserhint",{repo:REPO});
+  fh.style.cssText += ";border-color:var(--cyan);color:var(--cyan)";
+  ["btn-export","btn-import","btn-reset"].forEach(id =>
+    document.getElementById(id).style.display = SERVER ? "none" : "");
   paintStatic();
   renderBoard(); renderStory(); renderNew();
   document.getElementById("scriptbox").textContent = P.script || t("noscript");
@@ -345,6 +466,9 @@ function paintStatic(){
   wireTabs();
   document.getElementById("q").placeholder = t("search");
   document.getElementById("btn-refresh").title = t("refresh");
+  document.getElementById("btn-export").title = t("export");
+  document.getElementById("btn-import").title = t("import");
+  document.getElementById("btn-reset").title = t("reset");
   document.getElementById("btn-print").textContent = "🖨 " + t("print");
   document.getElementById("storyhint").textContent = t("storyhint");
   document.getElementById("lb-close").textContent = t("lbclose");
@@ -352,6 +476,10 @@ function paintStatic(){
 }
 let saveT = {};
 function autoSave(folder){
+  // เซฟทันที แล้วค่อยอัปเดตป้ายหลังหน้าจอวาดใหม่เสร็จ ไม่งั้นข้อความโดนทับ
+  if (BROWSER){ saveLocal();
+    setTimeout(()=>{ const el=document.getElementById("savestate"); if(el) el.textContent=t("tsavedlocal"); },0);
+    return; }
   if (!SERVER) return;
   clearTimeout(saveT[folder]);
   saveT[folder] = setTimeout(async () => {
@@ -363,6 +491,7 @@ function autoSave(folder){
   }, 700);
 }
 async function askPrompts(shot){
+  if (!SERVER) return buildAllJS(shot);
   const r = await fetch(API + "/api/prompts", {method:"POST", body: JSON.stringify(shot)})
               .then(x=>x.json()).catch(()=>null);
   return r && r.ok ? r.prompts : null;
@@ -465,7 +594,7 @@ function drawModal(){
       <img loading="lazy" src="${enc(`${P.root}/${s.folder}/${x.f}`)}" title="${esc(x.f)}" alt="">
       <span class="ch">${esc(x.ch)}</span>
     </div>`).join("");
-  const ro = SERVER ? "" : "readonly";
+  const ro = CAN_EDIT() ? "" : "readonly";
   const stateLabel = (P.product && P.product.label) || t("state");
   document.getElementById("modal").innerHTML = `
     <div style="display:flex;align-items:start;gap:10px">
@@ -488,7 +617,7 @@ function drawModal(){
       <button onclick="modalCopy(false)">${esc(t("copyonly"))}</button>
       <button onclick="resetTake()">${esc(t("resettake"))}</button>
       <span class="sp"></span>
-      <span class="savestate" id="savestate">${esc(SERVER?t("editable"):t("roedit"))}</span>
+      <span class="savestate" id="savestate">${esc(CAN_EDIT()?t("editable"):t("roedit"))}</span>
     </div>
 
     <details>
@@ -509,7 +638,8 @@ function drawModal(){
         ${(P.options.states||[]).length?`<div class="field" style="margin-bottom:10px"><label>${esc(stateLabel)}</label>${chipRow("states",s.state,"state")}</div>`:""}
         <div class="field" style="margin-bottom:12px"><label>${esc(t("action"))}</label>
           <textarea rows="3" ${ro} onchange="setTxt('action',this.value)">${esc(s.action||"")}</textarea></div>
-        ${SERVER?`<button class="pri" onclick="regen()">${esc(t("regen"))}</button>`:""}
+        ${CAN_EDIT()?`<button class="pri" onclick="regen()">${esc(t("regen"))}</button>
+          <button style="margin-left:8px;border-color:var(--red);color:var(--red)" onclick="deleteShot()">${esc(t("del"))}</button>`:""}
       </div>
     </details>`;
   const ud = document.getElementById("updrop");
@@ -534,6 +664,21 @@ async function uploadToShot(fileList){
   else toast(t("tupfail"));
 }
 
+async function deleteShot(){
+  if (!confirm(t("ndel",{f:cur.folder}))) return;
+  const folder = cur.folder;
+  let moved = false;
+  if (SERVER){
+    const r = await fetch(API + "/api/delete", {method:"POST", body: JSON.stringify({folder})})
+                .then(x=>x.json()).catch(()=>null);
+    moved = !!(r && r.moved);
+  }
+  P.shots = P.shots.filter(x => x.folder !== folder);
+  saveLocal();
+  closeModal(); renderNew();
+  toast(t(moved ? "tdeletedmoved" : "tdeleted",{f:folder}));
+}
+
 /* ============================================================ lightbox */
 let lbIdx = 0;
 function openLb(i){ lbIdx = i; drawLb(); document.getElementById("lb").classList.add("show"); }
@@ -547,10 +692,10 @@ function drawLb(){
   const on = (cur.picks||[]).includes(x.f), st = document.getElementById("lb-star");
   st.className = "star" + (on ? " on" : "");
   st.textContent = on ? t("lbunpick") : t("lbpick");
-  st.style.display = SERVER ? "" : "none";
+  st.style.display = CAN_EDIT() ? "" : "none";
 }
 function lbPick(){
-  if (!SERVER) return;
+  if (!CAN_EDIT()) return;
   const x = renderList(cur)[lbIdx];
   cur.picks = cur.picks || [];
   const i = cur.picks.indexOf(x.f);
@@ -621,7 +766,7 @@ function updatePreview(){
 }
 function renderNew(fresh){
   const el = document.getElementById("v-new");
-  if (!SERVER){ nf = null; el.innerHTML = `<div class="hint">${t("nofform")}</div>`; return; }
+  if (!CAN_EDIT()){ nf = null; el.innerHTML = `<div class="hint">${t("nofform")}</div>`; return; }
   // ฟอร์มกรอกค้างอยู่ อย่าไปล้างของเขา / never wipe a half-filled form on auto-refresh
   if (!fresh && nf && document.getElementById("nf-name")){ updatePreview(); return; }
   nf = blankNf();
@@ -659,7 +804,7 @@ function renderNew(fresh){
     <div class="fs"><h3><span class="num">5</span> ${esc(t("n5"))}</h3>
       <textarea id="nf-desc" rows="4" style="font-size:15px" placeholder="${esc(t("ndescph"))}">${esc(nf.desc||"")}</textarea></div>
 
-    <div class="fs"><h3><span class="num">6</span> ${esc(t("n6"))}</h3>
+    ${SERVER?`<div class="fs"><h3><span class="num">6</span> ${esc(t("n6"))}</h3>
       <div class="drop" id="nf-drop">${esc(t("ndrop"))}</div>
       <input type="file" id="nf-file" multiple accept="image/*" style="display:none">
       <div class="filelist" id="nf-filelist"></div>
@@ -667,9 +812,9 @@ function renderNew(fresh){
         <div class="sheetgrid">${P.sheets.map(p=>`
           <div class="sh ${nf.sheets.has(p)?'on':''}" data-p="${esc(p)}" onclick="toggleSheet(this)">
             <img loading="lazy" src="${enc(p)}" alt=""><div class="cap">${esc(p.split("/").pop())}</div>
-          </div>`).join("")}</div></div>`:""}</div>
+          </div>`).join("")}</div></div>`:""}</div>`:""}
 
-    <div class="fs"><h3><span class="num">7</span> ${esc(t("n7"))}</h3>
+    <div class="fs"><h3><span class="num">${SERVER?7:6}</span> ${esc(t("n7"))}</h3>
       <div class="field"><label>${esc(t("ntarget"))}</label>
         <div id="nf-target" style="color:var(--cyan);font-weight:700;margin-bottom:10px">—</div></div>
       <div class="field"><label>${esc(t("npreview"))}</label>
@@ -697,14 +842,16 @@ function renderNew(fresh){
     saveDraft(); updatePreview(); };
 
   const drop = document.getElementById("nf-drop"), fin = document.getElementById("nf-file");
-  drop.onclick = () => fin.click();
-  fin.onchange = () => { readFiles(fin.files, nf.files, "nf-filelist"); fin.value=""; };
-  const over = on => e => { e.preventDefault(); drop.classList.toggle("over", on); };
-  drop.ondragover = over(true); drop.ondragleave = over(false);
-  const zone = document.getElementById("v-new");   // ลากมาวางตรงไหนก็ได้ / drop anywhere
-  zone.ondragover = over(true); zone.ondragleave = over(false);
-  zone.ondrop = e => { e.preventDefault(); drop.classList.remove("over");
-                       readFiles(e.dataTransfer.files, nf.files, "nf-filelist"); };
+  if (drop){
+    drop.onclick = () => fin.click();
+    fin.onchange = () => { readFiles(fin.files, nf.files, "nf-filelist"); fin.value=""; };
+    const over = on => e => { e.preventDefault(); drop.classList.toggle("over", on); };
+    drop.ondragover = over(true); drop.ondragleave = over(false);
+    const zone = document.getElementById("v-new");   // ลากมาวางตรงไหนก็ได้ / drop anywhere
+    zone.ondragover = over(true); zone.ondragleave = over(false);
+    zone.ondrop = e => { e.preventDefault(); drop.classList.remove("over");
+                         readFiles(e.dataTransfer.files, nf.files, "nf-filelist"); };
+  }
   ["nf-name","nf-sec","nf-desc","nf-cast"].forEach(id =>
     document.getElementById(id).oninput = () => { saveDraft(); updatePreview(); });
   updatePreview();
@@ -739,8 +886,21 @@ async function addShot(){
   }
   const dup = P.shots.some(x => x.folder === s.folder);
   if (dup && !confirm(t("ndup",{f:s.folder}))) return;
-  s.overwrite = dup;
   s.prompts = await askPrompts(s) || {};
+
+  if (BROWSER){                                   // ไม่มีเซิร์ฟเวอร์ = เก็บลงเบราว์เซอร์
+    Object.assign(s, {picks:[], refs:[], renders:{}});
+    const at = P.shots.findIndex(x => x.folder === s.folder);
+    at >= 0 ? P.shots[at] = s : P.shots.push(s);
+    saveLocal(); clearDraft(); nf = null;
+    renderBoard(); renderStory(); renderNew(true);
+    document.querySelector('[data-v="board"]').click();
+    toast(t("tcreatedlocal",{f:s.folder}));
+    openModal(s.folder);
+    return;
+  }
+
+  s.overwrite = dup;
   s.files = nf.files.map(f=>({name:f.name, b64:f.b64}));
   s.sheets = [...nf.sheets];
 

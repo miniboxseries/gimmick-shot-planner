@@ -215,6 +215,7 @@ def scan(conf=None, write_js=True):
         "takes": conf["takes"], "script": read(os.path.join(HERE, conf["script_file"])),
         "options": conf["options"], "castPresets": conf["cast_presets"],
         "channels": conf["channels"], "product": conf.get("product") or {},
+        "prompt": conf.get("prompt") or {},          # หน้าเว็บใช้ตอนทำงานแบบไม่มีเซิร์ฟเวอร์
         "shots": shots,
     }
     if write_js:
@@ -314,12 +315,34 @@ def api_upload(conf, data):
 
 
 def api_delete(conf, data):
-    """เอาช็อตออกจากลิสต์ (ไฟล์ในโฟลเดอร์ไม่ถูกลบ) / drop a shot, keep its files"""
+    """เอาช็อตออกจากลิสต์ + เก็บโฟลเดอร์ให้เรียบร้อย ไม่งั้นสแกนรอบหน้ามันโผล่กลับมา
+    Drop a shot. An empty folder is removed; one holding images is moved to _deleted/
+    so it stays recoverable and stops reappearing on the next scan."""
     folder = safe_folder(data.get("folder"))
-    before = len(conf["shots"])
+    if not folder:
+        return {"ok": False, "error": "no folder name"}
     conf["shots"] = [s for s in conf["shots"] if s["folder"] != folder]
     save_conf(conf)
-    return {"ok": len(conf["shots"]) < before, "folder": folder}
+
+    fpath, moved = os.path.join(shots_dir(conf), folder), False
+    if os.path.isdir(fpath):
+        keep = [f for f in os.listdir(fpath) if IMG_RE.search(f)]
+        refdir = os.path.join(fpath, "ref")
+        if os.path.isdir(refdir):
+            keep += [f for f in os.listdir(refdir) if IMG_RE.search(f)]
+        if keep:
+            trash = os.path.join(HERE, "_deleted")
+            os.makedirs(trash, exist_ok=True)
+            dest = os.path.join(trash, folder)
+            for n in range(2, 99):                       # ชื่อซ้ำก็ต่อเลขไป
+                if not os.path.exists(dest):
+                    break
+                dest = os.path.join(trash, "%s_%d" % (folder, n))
+            shutil.move(fpath, dest)
+            moved = True
+        else:
+            shutil.rmtree(fpath, ignore_errors=True)
+    return {"ok": True, "folder": folder, "moved": moved}
 
 
 # ---------------------------------------------------------------- server
